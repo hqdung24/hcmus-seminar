@@ -1,0 +1,41 @@
+# Dart / Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+pubspec.lock
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated platform folders (will be created by flutter create)
+# Keep tracking after flutter create has run, but don't commit build outputs
+android/.gradle/
+android/captures/
+android/local.properties
+android/**/GeneratedPluginRegistrant.java
+android/key.properties
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugin_registrant.h
+windows/flutter/generated_plugins.cmake
+
+# Coverage
+coverage/
+
+# Logs
+*.log

@@ -10,29 +10,81 @@ class DrawingToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 1,
+    return Card(
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListenableBuilder(
         listenable: controller,
         builder: (_, __) => SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              for (final tool in DrawingTool.values)
-                IconButton(
-                  isSelected: controller.tool == tool,
-                  icon: Icon(_iconFor(tool)),
-                  onPressed: () => controller.setTool(tool),
-                  tooltip: tool.name,
-                ),
-              const VerticalDivider(),
-              ColorSwatchPicker(controller: controller),
-              const VerticalDivider(),
-              SizedBox(
-                width: 200,
-                child: StrokeWidthSlider(controller: controller),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            child: IntrinsicHeight(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final tool in DrawingTool.values)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Tooltip(
+                        message: tool.name.toUpperCase(),
+                        child: IconButton(
+                          isSelected: controller.tool == tool,
+                          style: IconButton.styleFrom(
+                            backgroundColor: controller.tool == tool 
+                                ? Theme.of(context).colorScheme.primaryContainer 
+                                : null,
+                            foregroundColor: controller.tool == tool
+                                ? Theme.of(context).colorScheme.onPrimaryContainer
+                                : Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          icon: Icon(_iconFor(tool)),
+                          onPressed: () => controller.setTool(tool),
+                        ),
+                      ),
+                    ),
+                  const VerticalDivider(width: 32, indent: 4, endIndent: 4),
+                  ColorSwatchPicker(controller: controller),
+                  const VerticalDivider(width: 32, indent: 4, endIndent: 4),
+                  StrokeWidthSlider(controller: controller),
+                  const VerticalDivider(width: 32, indent: 4, endIndent: 4),
+                  Tooltip(
+                    message: 'Fill Shape',
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () => controller.setStyle(
+                        controller.style.copyWith(filled: !controller.style.filled),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              controller.style.filled 
+                                  ? Icons.format_color_fill 
+                                  : Icons.format_color_reset,
+                              color: controller.style.filled
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Fill',
+                              style: TextStyle(
+                                fontWeight: controller.style.filled ? FontWeight.bold : FontWeight.normal,
+                                color: controller.style.filled
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

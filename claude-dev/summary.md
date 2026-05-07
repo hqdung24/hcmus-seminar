@@ -177,7 +177,22 @@ hcmus-seminar/
 
 ---
 
-## Notes for future Claude sessions
+## Update: 2026-05-07
+
+**Tasks Completed in Latest Session:**
+1. **Windows Platform Support:** Ran `flutter create --platforms=windows .` to generate the Windows runner, enabling desktop testing and execution.
+2. **Dependencies:** Ran `flutter pub get` successfully.
+3. **JPEG Export:** Implemented full JPEG export functionality in `ExportService` by integrating the `image` package to correctly encode raw byte data to JPEG.
+4. **Git Commit:** Committed the Windows platform setup and JPEG export features.
+5. **README Update:** Added a "Future Improvements" section to the `README.md`.
+
+**Remaining Items / Technical Debt:**
+1. **Compilation Warnings:** `flutter analyze` currently reports some `info` warnings related to `Color.value` deprecation in `shape_codec.dart` and `shape_codec_test.dart` (suggesting `toARGB32()`), as well as some unnecessary imports. These are not breaking the build but should be cleaned up.
+2. **Platform-specific testing:** Still need to run and verify on an Android device/emulator.
+
+---
+
+## Notes for future AI sessions
 
 - The bootstrap **intentionally compresses Day 1-3 of the roadmap** into the initial commit, since the team will likely refactor anyway. If strict day-by-day commits are needed, the team can split this into smaller PRs.
 - Serialization layer is **Flutter-free** — when running tests, can be unit-tested without `flutter_test`.

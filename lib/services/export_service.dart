@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+import 'package:image/image.dart' as img;
 
 enum ImageFormat { png, jpeg }
 
@@ -17,24 +19,39 @@ class ExportService {
     final byteData = await image.toByteData(
       format: format == ImageFormat.png
           ? ui.ImageByteFormat.png
-          : ui.ImageByteFormat.rawRgba, // JPEG handled below
+          : ui.ImageByteFormat.rawRgba,
     );
     if (byteData == null) return null;
 
-    // For JPEG we'd need an extra encoder; for skeleton we write PNG only.
-    // (Easiest: stick to PNG, or add `image` package later.)
-    final bytes = byteData.buffer.asUint8List();
+    Uint8List finalBytes;
+    if (format == ImageFormat.png) {
+      finalBytes = byteData.buffer.asUint8List();
+    } else {
+      final rawBytes = byteData.buffer.asUint8List();
+      final imgImage = img.Image.fromBytes(
+        width: image.width,
+        height: image.height,
+        bytes: rawBytes.buffer,
+        order: img.ChannelOrder.rgba,
+      );
+      finalBytes = img.encodeJpg(imgImage);
+    }
 
-    final ext = format == ImageFormat.png ? 'png' : 'png';
+    final ext = format == ImageFormat.png ? 'png' : 'jpg';
     final path = await FilePicker.platform.saveFile(
       dialogTitle: 'Export image',
       fileName: 'drawing.$ext',
-      bytes: bytes,
+      bytes: finalBytes,
     );
+    
     if (path == null) return null;
+    
+    // FilePicker on desktop (Windows/Linux/macOS) usually returns a path but doesn't write bytes.
+    // On web it handles download, but we are targeting Windows/Mobile.
     if (!Platform.isAndroid && !Platform.isIOS) {
-      await File(path).writeAsBytes(bytes);
+      await File(path).writeAsBytes(finalBytes);
     }
+    
     return path;
   }
 }

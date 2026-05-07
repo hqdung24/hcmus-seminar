@@ -30,10 +30,14 @@ class _CanvasPageState extends State<CanvasPage> {
   }
 
   Future<void> _load() async {
-    final shapes = await _fileService.load();
-    if (shapes != null) {
-      _controller.loadShapes(shapes);
-      _toast('Loaded ${shapes.length} shapes');
+    try {
+      final shapes = await _fileService.load();
+      if (shapes != null) {
+        _controller.loadShapes(shapes);
+        _toast('Loaded ${shapes.length} shapes');
+      }
+    } catch (e) {
+      _toast('Error loading file: $e');
     }
   }
 
@@ -52,13 +56,27 @@ class _CanvasPageState extends State<CanvasPage> {
       appBar: AppBar(
         title: const Text('Drawing App'),
         actions: [
-          IconButton(icon: const Icon(Icons.folder_open), onPressed: _load),
-          IconButton(icon: const Icon(Icons.save), onPressed: _save),
-          IconButton(icon: const Icon(Icons.image), onPressed: _exportPng),
-          IconButton(
+          TextButton.icon(
+            icon: const Icon(Icons.folder_open),
+            label: const Text('Load'),
+            onPressed: _load,
+          ),
+          TextButton.icon(
+            icon: const Icon(Icons.save),
+            label: const Text('Save'),
+            onPressed: _save,
+          ),
+          TextButton.icon(
+            icon: const Icon(Icons.image),
+            label: const Text('Export'),
+            onPressed: _exportPng,
+          ),
+          TextButton.icon(
             icon: const Icon(Icons.delete_outline),
+            label: const Text('Clear'),
             onPressed: _controller.clear,
           ),
+          const SizedBox(width: 8), // Added slight padding at the end
         ],
       ),
       body: Column(

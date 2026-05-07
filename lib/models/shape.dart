@@ -38,4 +38,10 @@ abstract class Shape {
 
   /// Return a copy with updated end point (used while dragging).
   Shape withEnd(Offset newEnd);
+
+  /// Return a copy with an updated style.
+  Shape withStyle(ShapeStyle newStyle);
+
+  /// Check if the point is contained within the filled area of the shape.
+  bool contains(Offset point);
 }

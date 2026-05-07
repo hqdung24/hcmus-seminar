@@ -9,8 +9,8 @@ import '../models/shapes/point_shape.dart';
 import '../models/shapes/rectangle_shape.dart';
 import '../models/shapes/square_shape.dart';
 
-/// The active drawing tool. Maps 1:1 to ShapeType.
-enum DrawingTool { point, line, rectangle, square, circle, ellipse }
+/// The active drawing tool.
+enum DrawingTool { point, line, rectangle, square, circle, ellipse, fill }
 
 /// Holds the canvas state and exposes mutation methods.
 /// Use ListenableBuilder in the UI to react to changes.
@@ -37,6 +37,10 @@ class CanvasController extends ChangeNotifier {
   // ---- drawing lifecycle ----
 
   void startDrawing(Offset start) {
+    if (tool == DrawingTool.fill) {
+      _fillShapeAt(start);
+      return;
+    }
     _draftShape = _createShape(start, start);
     notifyListeners();
   }
@@ -72,6 +76,23 @@ class CanvasController extends ChangeNotifier {
 
   // ---- internal ----
 
+  void _fillShapeAt(Offset point) {
+    // Iterate in reverse to find the topmost shape
+    for (int i = _shapes.length - 1; i >= 0; i--) {
+      final shape = _shapes[i];
+      if (shape.contains(point)) {
+        // Create a new shape with updated style
+        final newStyle = shape.style.copyWith(
+          filled: true,
+          strokeColor: style.strokeColor, // Use current selected color
+        );
+        _shapes[i] = shape.withStyle(newStyle);
+        notifyListeners();
+        return;
+      }
+    }
+  }
+
   Shape _createShape(Offset start, Offset end) {
     switch (tool) {
       case DrawingTool.point:
@@ -86,6 +107,8 @@ class CanvasController extends ChangeNotifier {
         return CircleShape(start: start, end: end, style: style);
       case DrawingTool.ellipse:
         return EllipseShape(start: start, end: end, style: style);
+      case DrawingTool.fill:
+        throw StateError('Cannot create a shape for the fill tool.');
     }
   }
 }

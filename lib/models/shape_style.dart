@@ -34,7 +34,7 @@ class ShapeStyle {
 
   Paint? get fillPaint => filled
       ? (Paint()
-        ..color = fillColor
+        ..color = strokeColor
         ..style = PaintingStyle.fill)
       : null;
 }

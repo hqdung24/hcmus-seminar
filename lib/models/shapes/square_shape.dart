@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 import '../shape.dart';
+import '../shape_style.dart';
 
 class SquareShape extends Shape {
   const SquareShape({
@@ -35,4 +36,13 @@ class SquareShape extends Shape {
   @override
   Shape withEnd(Offset newEnd) =>
       SquareShape(start: start, end: newEnd, style: style);
+
+  @override
+  Shape withStyle(ShapeStyle newStyle) =>
+      SquareShape(start: start, end: end, style: newStyle);
+
+  @override
+  bool contains(Offset point) {
+    return _rect().contains(point);
+  }
 }

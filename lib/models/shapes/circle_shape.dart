@@ -1,5 +1,6 @@
 import 'dart:ui';
 import '../shape.dart';
+import '../shape_style.dart';
 
 class CircleShape extends Shape {
   const CircleShape({
@@ -24,4 +25,13 @@ class CircleShape extends Shape {
   @override
   Shape withEnd(Offset newEnd) =>
       CircleShape(start: start, end: newEnd, style: style);
+
+  @override
+  Shape withStyle(ShapeStyle newStyle) =>
+      CircleShape(start: start, end: end, style: newStyle);
+
+  @override
+  bool contains(Offset point) {
+    return (point - start).distance <= radius;
+  }
 }

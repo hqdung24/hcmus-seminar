@@ -1,5 +1,6 @@
 import 'dart:ui';
 import '../shape.dart';
+import '../shape_style.dart';
 
 class LineShape extends Shape {
   const LineShape({
@@ -19,4 +20,14 @@ class LineShape extends Shape {
   @override
   Shape withEnd(Offset newEnd) =>
       LineShape(start: start, end: newEnd, style: style);
+
+  @override
+  Shape withStyle(ShapeStyle newStyle) =>
+      LineShape(start: start, end: end, style: newStyle);
+
+  @override
+  bool contains(Offset point) {
+    // Lines cannot be filled, so they don't contain points for filling.
+    return false;
+  }
 }

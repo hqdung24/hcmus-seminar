@@ -47,41 +47,6 @@ class DrawingToolbar extends StatelessWidget {
                   ColorSwatchPicker(controller: controller),
                   const VerticalDivider(width: 32, indent: 4, endIndent: 4),
                   StrokeWidthSlider(controller: controller),
-                  const VerticalDivider(width: 32, indent: 4, endIndent: 4),
-                  Tooltip(
-                    message: 'Fill Shape',
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: () => controller.setStyle(
-                        controller.style.copyWith(filled: !controller.style.filled),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              controller.style.filled 
-                                  ? Icons.format_color_fill 
-                                  : Icons.format_color_reset,
-                              color: controller.style.filled
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Fill',
-                              style: TextStyle(
-                                fontWeight: controller.style.filled ? FontWeight.bold : FontWeight.normal,
-                                color: controller.style.filled
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -105,6 +70,8 @@ class DrawingToolbar extends StatelessWidget {
         return Icons.circle_outlined;
       case DrawingTool.ellipse:
         return Icons.panorama_fish_eye;
+      case DrawingTool.fill:
+        return Icons.format_color_fill;
     }
   }
 }

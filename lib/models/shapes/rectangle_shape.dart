@@ -23,4 +23,13 @@ class RectangleShape extends Shape {
   @override
   Shape withEnd(Offset newEnd) =>
       RectangleShape(start: start, end: newEnd, style: style);
+
+  @override
+  Shape withStyle(ShapeStyle newStyle) =>
+      RectangleShape(start: start, end: end, style: newStyle);
+
+  @override
+  bool contains(Offset point) {
+    return Rect.fromPoints(start, end).contains(point);
+  }
 }

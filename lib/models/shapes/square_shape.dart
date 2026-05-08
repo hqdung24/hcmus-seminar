@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 import '../shape.dart';
+import '../shape_style.dart';
 
 class SquareShape extends Shape {
   const SquareShape({
@@ -36,6 +37,10 @@ class SquareShape extends Shape {
   Shape withEnd(Offset newEnd) =>
       SquareShape(start: start, end: newEnd, style: style);
 
+  @override
+  Shape withStyle(ShapeStyle newStyle) =>
+      SquareShape(start: start, end: end, style: newStyle);
+
   /// Normalized (always non-negative w/h) bbox for hit-testing.
   @override
   Rect get bounds {
@@ -53,4 +58,7 @@ class SquareShape extends Shape {
     return Shape.distanceToRectBorder(point, rect) <=
         tolerance + style.strokeWidth / 2;
   }
+
+  @override
+  bool contains(Offset point) => _rect().contains(point);
 }

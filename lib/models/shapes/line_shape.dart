@@ -1,5 +1,6 @@
 import 'dart:ui';
 import '../shape.dart';
+import '../shape_style.dart';
 
 class LineShape extends Shape {
   const LineShape({
@@ -21,6 +22,10 @@ class LineShape extends Shape {
       LineShape(start: start, end: newEnd, style: style);
 
   @override
+  Shape withStyle(ShapeStyle newStyle) =>
+      LineShape(start: start, end: end, style: newStyle);
+
+  @override
   Rect get bounds => Rect.fromPoints(start, end);
 
   @override
@@ -37,4 +42,8 @@ class LineShape extends Shape {
     final closest = start + Offset(ab.dx * tClamped, ab.dy * tClamped);
     return (point - closest).distance <= tolerance + style.strokeWidth / 2;
   }
+
+  /// Lines have no closed area, so paint-bucket fill never applies to them.
+  @override
+  bool contains(Offset point) => false;
 }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 import '../shape.dart';
+import '../shape_style.dart';
 
 class CircleShape extends Shape {
   const CircleShape({
@@ -26,6 +27,10 @@ class CircleShape extends Shape {
       CircleShape(start: start, end: newEnd, style: style);
 
   @override
+  Shape withStyle(ShapeStyle newStyle) =>
+      CircleShape(start: start, end: end, style: newStyle);
+
+  @override
   Rect get bounds => Rect.fromCircle(center: start, radius: radius);
 
   @override
@@ -34,4 +39,7 @@ class CircleShape extends Shape {
     if (style.filled && dist <= radius + tolerance) return true;
     return (dist - radius).abs() <= tolerance + style.strokeWidth / 2;
   }
+
+  @override
+  bool contains(Offset point) => (point - start).distance <= radius;
 }

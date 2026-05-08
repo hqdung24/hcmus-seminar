@@ -136,13 +136,15 @@ The project was developed over **two weeks** in two phases, with work split equa
 
 ### Phase 2 — Week 2 (features & cross-platform polish)
 
-- Toolbar with stroke / fill / width controls
+- Toolbar with stroke / fill / width controls (two-row card layout)
 - Custom binary format encoder & decoder
 - Save / load roundtrip via `file_picker`
-- PNG export via `RepaintBoundary.toImage`
-- Eraser tool with shape-aware hit-testing
-- Android build configuration, ABI filtering for arm64 / armv7
+- PNG and JPEG export via `RepaintBoundary.toImage` + `image` package
+- Eraser tool with shape-aware hit-testing and visible hit-zone indicator
+- Paint-bucket tool — click any drawn shape to fill it with the current colour
+- Windows desktop runner and Android build configuration (ABI filtering for arm64 / armv7)
 - Mobile-specific UX: hide indicator on touch lift, file-picker fallback for custom extensions
+- Graceful error dialog for invalid `.draw` files
 - Demo video recording, README, documentation
 
 Each member contributed across both phases; tasks were rotated weekly to share knowledge of all layers.
@@ -154,3 +156,15 @@ Each member contributed across both phases; tasks were rotated weekly to share k
 - Source code submitted as a `.zip` archive (no GitHub link).
 - Demo video uploaded as **Unlisted** on YouTube; only graders with the link can access it.
 - Tested on Windows 11 and Android 11 (Xiaomi M2012K11AC).
+
+---
+
+## Future improvements
+
+Beyond the current seminar requirements, several features could extend the application:
+
+- **Free-hand drawing** — continuous stroke drawing in addition to geometric shapes
+- **Undo / redo** — action stack to revert and reapply changes
+- **Object manipulation** — select, move, resize, and delete shapes after drawing
+- **Layer management** — layered canvas with separate background / foreground groups
+- **Additional platforms** — testing and deployment to Web and macOS using Flutter's multi-platform support

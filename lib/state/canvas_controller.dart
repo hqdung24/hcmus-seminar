@@ -8,9 +8,19 @@ import '../models/shapes/point_shape.dart';
 import '../models/shapes/rectangle_shape.dart';
 import '../models/shapes/square_shape.dart';
 
-/// The active drawing tool. The first 6 values map 1:1 to ShapeType;
-/// `eraser` is a non-shape tool that removes shapes on tap/drag.
-enum DrawingTool { point, line, rectangle, square, circle, ellipse, eraser }
+/// The active drawing tool. The first 6 values map 1:1 to ShapeType.
+/// `eraser` removes shapes on tap/drag; `fill` (paint bucket) recolours the
+/// topmost shape under the cursor.
+enum DrawingTool {
+  point,
+  line,
+  rectangle,
+  square,
+  circle,
+  ellipse,
+  eraser,
+  fill,
+}
 
 /// Holds the canvas state and exposes mutation methods.
 /// Use ListenableBuilder in the UI to react to changes.
@@ -38,19 +48,12 @@ class CanvasController extends ChangeNotifier {
 
   void startDrawing(Offset start) {
     if (tool == DrawingTool.eraser) return;
+    if (tool == DrawingTool.fill) {
+      _fillShapeAt(start);
+      return;
+    }
     _draftShape = _createShape(start, start);
     notifyListeners();
-  }
-
-  /// Remove the topmost (most recently drawn) shape under [point], if any.
-  void eraseAt(Offset point) {
-    for (int i = _shapes.length - 1; i >= 0; i--) {
-      if (_shapes[i].hitTest(point)) {
-        _shapes.removeAt(i);
-        notifyListeners();
-        return;
-      }
-    }
   }
 
   void updateDrawing(Offset current) {
@@ -64,6 +67,17 @@ class CanvasController extends ChangeNotifier {
     _shapes.add(_draftShape!);
     _draftShape = null;
     notifyListeners();
+  }
+
+  /// Remove the topmost (most recently drawn) shape under [point], if any.
+  void eraseAt(Offset point) {
+    for (int i = _shapes.length - 1; i >= 0; i--) {
+      if (_shapes[i].hitTest(point)) {
+        _shapes.removeAt(i);
+        notifyListeners();
+        return;
+      }
+    }
   }
 
   // ---- file ops ----
@@ -84,6 +98,24 @@ class CanvasController extends ChangeNotifier {
 
   // ---- internal ----
 
+  /// Paint-bucket fill: replace the topmost shape under [point] with a
+  /// copy whose style is `filled = true` using the controller's current
+  /// fill colour.
+  void _fillShapeAt(Offset point) {
+    for (int i = _shapes.length - 1; i >= 0; i--) {
+      final shape = _shapes[i];
+      if (shape.contains(point)) {
+        final newStyle = shape.style.copyWith(
+          filled: true,
+          fillColor: style.fillColor,
+        );
+        _shapes[i] = shape.withStyle(newStyle);
+        notifyListeners();
+        return;
+      }
+    }
+  }
+
   Shape _createShape(Offset start, Offset end) {
     switch (tool) {
       case DrawingTool.point:
@@ -100,6 +132,8 @@ class CanvasController extends ChangeNotifier {
         return EllipseShape(start: start, end: end, style: style);
       case DrawingTool.eraser:
         throw StateError('eraser tool does not create shapes');
+      case DrawingTool.fill:
+        throw StateError('fill tool does not create shapes');
     }
   }
 }

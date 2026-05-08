@@ -18,6 +18,18 @@ class ColorSwatchPicker extends StatelessWidget {
     Colors.white,
   ];
 
+  static String _nameOf(Color c) {
+    if (c == Colors.black) return 'Black';
+    if (c == Colors.red) return 'Red';
+    if (c == Colors.green) return 'Green';
+    if (c == Colors.blue) return 'Blue';
+    if (c == Colors.orange) return 'Orange';
+    if (c == Colors.purple) return 'Purple';
+    if (c == Colors.yellow) return 'Yellow';
+    if (c == Colors.white) return 'White';
+    return '';
+  }
+
   const ColorSwatchPicker({
     super.key,
     required this.controller,
@@ -39,21 +51,31 @@ class ColorSwatchPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         for (final color in _palette)
-          GestureDetector(
-            onTap: () => _pick(color),
-            child: Container(
-              width: 24,
-              height: 24,
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: _selected == color ? Colors.blueAccent : Colors.grey,
-                  width: _selected == color ? 3 : 1,
+          Tooltip(
+            message: _nameOf(color),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => _pick(color),
+              child: Padding(
+                padding: const EdgeInsets.all(2),
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: _selected == color
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline,
+                      width: _selected == color ? 3 : 1,
+                    ),
+                  ),
                 ),
               ),
             ),

@@ -3,6 +3,9 @@ import '../../state/canvas_controller.dart';
 import 'color_swatch_picker.dart';
 import 'stroke_width_slider.dart';
 
+/// Two-row toolbar wrapped in an elevated card:
+/// row 1 — tool selector (6 shapes + eraser + paint bucket)
+/// row 2 — stroke colour + fill colour + fill toggle + stroke width slider
 class DrawingToolbar extends StatelessWidget {
   final CanvasController controller;
 
@@ -10,15 +13,16 @@ class DrawingToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 1,
+    return Card(
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListenableBuilder(
         listenable: controller,
         builder: (_, __) => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _toolsRow(),
-            const Divider(height: 1),
+            _toolsRow(context),
+            const Divider(height: 1, indent: 12, endIndent: 12),
             _styleRow(),
           ],
         ),
@@ -26,47 +30,38 @@ class DrawingToolbar extends StatelessWidget {
     );
   }
 
-  Widget _toolsRow() {
-    return Builder(
-      builder: (context) {
-        final scheme = Theme.of(context).colorScheme;
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Row(
-              children: [
-                for (final tool in DrawingTool.values)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: controller.tool == tool
-                            ? scheme.primaryContainer
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: controller.tool == tool
-                              ? scheme.primary
-                              : Colors.transparent,
-                          width: 2,
-                        ),
-                      ),
-                      child: IconButton(
-                        icon: Icon(_iconFor(tool)),
-                        color: controller.tool == tool
-                            ? scheme.onPrimaryContainer
-                            : null,
-                        onPressed: () => controller.setTool(tool),
-                        tooltip: _tooltipFor(tool),
-                      ),
+  Widget _toolsRow(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final tool in DrawingTool.values)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Tooltip(
+                  message: _tooltipFor(tool),
+                  child: IconButton(
+                    isSelected: controller.tool == tool,
+                    style: IconButton.styleFrom(
+                      backgroundColor: controller.tool == tool
+                          ? scheme.primaryContainer
+                          : null,
+                      foregroundColor: controller.tool == tool
+                          ? scheme.onPrimaryContainer
+                          : scheme.onSurfaceVariant,
                     ),
+                    icon: Icon(_iconFor(tool)),
+                    onPressed: () => controller.setTool(tool),
                   ),
-              ],
-            ),
-          ),
-        );
-      },
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -77,6 +72,7 @@ class DrawingToolbar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             _group(
               label: 'Stroke',
@@ -89,6 +85,7 @@ class DrawingToolbar extends StatelessWidget {
             _group(
               label: 'Fill',
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   ColorSwatchPicker(
                     controller: controller,
@@ -105,24 +102,7 @@ class DrawingToolbar extends StatelessWidget {
               ),
             ),
             _divider(),
-            _group(
-              label: 'Width',
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 160,
-                    child: StrokeWidthSlider(controller: controller),
-                  ),
-                  SizedBox(
-                    width: 24,
-                    child: Text(
-                      controller.style.strokeWidth.toStringAsFixed(0),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            StrokeWidthSlider(controller: controller),
           ],
         ),
       ),
@@ -131,6 +111,7 @@ class DrawingToolbar extends StatelessWidget {
 
   Widget _group({required String label, required Widget child}) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Padding(
@@ -169,6 +150,8 @@ class DrawingToolbar extends StatelessWidget {
         return Icons.panorama_fish_eye;
       case DrawingTool.eraser:
         return Icons.cleaning_services;
+      case DrawingTool.fill:
+        return Icons.format_color_fill;
     }
   }
 
@@ -188,6 +171,8 @@ class DrawingToolbar extends StatelessWidget {
         return 'Ellipse';
       case DrawingTool.eraser:
         return 'Eraser';
+      case DrawingTool.fill:
+        return 'Paint bucket';
     }
   }
 }

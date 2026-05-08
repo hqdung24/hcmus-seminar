@@ -39,17 +39,26 @@ abstract class Shape {
   /// Return a copy with updated end point (used while dragging).
   Shape withEnd(Offset newEnd);
 
+  /// Return a copy with an updated style. Used by the paint-bucket tool to
+  /// change a shape's fill / stroke without recreating its geometry.
+  Shape withStyle(ShapeStyle newStyle);
+
   /// Axis-aligned bounding rect of the shape as rendered.
   Rect get bounds;
 
   /// True if [point] is within [tolerance] pixels of this shape's actual
-  /// geometry (not its bounding box). Each shape overrides this with its
-  /// own distance math; the default falls back to bbox.
+  /// geometry (not its bounding box). Used by the eraser tool.
+  /// Each shape overrides this with its own distance math; the default
+  /// falls back to bbox.
   bool hitTest(Offset point, {double tolerance = 10.0}) =>
       bounds.inflate(tolerance).contains(point);
 
+  /// True if [point] is inside the closed area of this shape (no tolerance).
+  /// Used by the paint-bucket tool to fill a shape on click.
+  /// Open shapes (point, line) return false since they have no closed area.
+  bool contains(Offset point);
+
   /// Shortest distance from [p] to the border of axis-aligned rect [r].
-  /// Returns 0 if on border, negative-free positive distance otherwise.
   /// Used by RectangleShape and SquareShape for outline hit-testing.
   static double distanceToRectBorder(Offset p, Rect r) {
     if (r.contains(p)) {

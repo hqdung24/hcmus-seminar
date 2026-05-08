@@ -25,6 +25,10 @@ class RectangleShape extends Shape {
       RectangleShape(start: start, end: newEnd, style: style);
 
   @override
+  Shape withStyle(ShapeStyle newStyle) =>
+      RectangleShape(start: start, end: end, style: newStyle);
+
+  @override
   Rect get bounds => Rect.fromPoints(start, end);
 
   @override
@@ -34,4 +38,8 @@ class RectangleShape extends Shape {
     return Shape.distanceToRectBorder(point, rect) <=
         tolerance + style.strokeWidth / 2;
   }
+
+  @override
+  bool contains(Offset point) =>
+      Rect.fromPoints(start, end).contains(point);
 }

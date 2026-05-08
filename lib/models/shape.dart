@@ -38,4 +38,33 @@ abstract class Shape {
 
   /// Return a copy with updated end point (used while dragging).
   Shape withEnd(Offset newEnd);
+
+  /// Axis-aligned bounding rect of the shape as rendered.
+  Rect get bounds;
+
+  /// True if [point] is within [tolerance] pixels of this shape's actual
+  /// geometry (not its bounding box). Each shape overrides this with its
+  /// own distance math; the default falls back to bbox.
+  bool hitTest(Offset point, {double tolerance = 10.0}) =>
+      bounds.inflate(tolerance).contains(point);
+
+  /// Shortest distance from [p] to the border of axis-aligned rect [r].
+  /// Returns 0 if on border, negative-free positive distance otherwise.
+  /// Used by RectangleShape and SquareShape for outline hit-testing.
+  static double distanceToRectBorder(Offset p, Rect r) {
+    if (r.contains(p)) {
+      final inside = [
+        p.dx - r.left,
+        r.right - p.dx,
+        p.dy - r.top,
+        r.bottom - p.dy,
+      ];
+      return inside.reduce((a, b) => a < b ? a : b);
+    }
+    final closest = Offset(
+      p.dx.clamp(r.left, r.right),
+      p.dy.clamp(r.top, r.bottom),
+    );
+    return (p - closest).distance;
+  }
 }

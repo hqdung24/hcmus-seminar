@@ -24,11 +24,14 @@ class FileService {
   }
 
   /// Open a .draw file and return the parsed shapes, or null if cancelled.
+  /// Android's Storage Access Framework rejects custom extensions, so we
+  /// fall back to FileType.any there and let the codec validate the bytes.
   Future<List<Shape>?> load() async {
+    final useCustomFilter = !Platform.isAndroid && !Platform.isIOS;
     final result = await FilePicker.platform.pickFiles(
       dialogTitle: 'Open drawing',
-      type: FileType.custom,
-      allowedExtensions: ['draw'],
+      type: useCustomFilter ? FileType.custom : FileType.any,
+      allowedExtensions: useCustomFilter ? ['draw'] : null,
       withData: true,
     );
     if (result == null || result.files.isEmpty) return null;

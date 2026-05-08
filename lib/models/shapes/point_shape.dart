@@ -20,4 +20,12 @@ class PointShape extends Shape {
   @override
   Shape withEnd(Offset newEnd) =>
       PointShape(start: start, end: newEnd, style: style);
+
+  @override
+  Rect get bounds =>
+      Rect.fromCircle(center: start, radius: style.strokeWidth / 2 + 4);
+
+  @override
+  bool hitTest(Offset point, {double tolerance = 10.0}) =>
+      (point - start).distance <= tolerance + style.strokeWidth / 2;
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/shape.dart';
 import '../models/shape_style.dart';
@@ -9,8 +8,9 @@ import '../models/shapes/point_shape.dart';
 import '../models/shapes/rectangle_shape.dart';
 import '../models/shapes/square_shape.dart';
 
-/// The active drawing tool. Maps 1:1 to ShapeType.
-enum DrawingTool { point, line, rectangle, square, circle, ellipse }
+/// The active drawing tool. The first 6 values map 1:1 to ShapeType;
+/// `eraser` is a non-shape tool that removes shapes on tap/drag.
+enum DrawingTool { point, line, rectangle, square, circle, ellipse, eraser }
 
 /// Holds the canvas state and exposes mutation methods.
 /// Use ListenableBuilder in the UI to react to changes.
@@ -37,8 +37,20 @@ class CanvasController extends ChangeNotifier {
   // ---- drawing lifecycle ----
 
   void startDrawing(Offset start) {
+    if (tool == DrawingTool.eraser) return;
     _draftShape = _createShape(start, start);
     notifyListeners();
+  }
+
+  /// Remove the topmost (most recently drawn) shape under [point], if any.
+  void eraseAt(Offset point) {
+    for (int i = _shapes.length - 1; i >= 0; i--) {
+      if (_shapes[i].hitTest(point)) {
+        _shapes.removeAt(i);
+        notifyListeners();
+        return;
+      }
+    }
   }
 
   void updateDrawing(Offset current) {
@@ -86,6 +98,8 @@ class CanvasController extends ChangeNotifier {
         return CircleShape(start: start, end: end, style: style);
       case DrawingTool.ellipse:
         return EllipseShape(start: start, end: end, style: style);
+      case DrawingTool.eraser:
+        throw StateError('eraser tool does not create shapes');
     }
   }
 }

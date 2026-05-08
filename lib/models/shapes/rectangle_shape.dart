@@ -23,4 +23,15 @@ class RectangleShape extends Shape {
   @override
   Shape withEnd(Offset newEnd) =>
       RectangleShape(start: start, end: newEnd, style: style);
+
+  @override
+  Rect get bounds => Rect.fromPoints(start, end);
+
+  @override
+  bool hitTest(Offset point, {double tolerance = 10.0}) {
+    final rect = Rect.fromPoints(start, end);
+    if (style.filled && rect.inflate(tolerance).contains(point)) return true;
+    return Shape.distanceToRectBorder(point, rect) <=
+        tolerance + style.strokeWidth / 2;
+  }
 }

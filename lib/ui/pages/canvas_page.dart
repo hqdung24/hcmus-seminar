@@ -38,7 +38,7 @@ class _CanvasPageState extends State<CanvasPage> {
   }
 
   Future<void> _exportPng() async {
-    final path = await _exportService.export(_repaintKey, ImageFormat.png);
+    final path = await _exportService.exportPng(_repaintKey);
     _toast(path != null ? 'Exported to $path' : 'Export cancelled');
   }
 

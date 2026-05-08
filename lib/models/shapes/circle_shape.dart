@@ -24,4 +24,14 @@ class CircleShape extends Shape {
   @override
   Shape withEnd(Offset newEnd) =>
       CircleShape(start: start, end: newEnd, style: style);
+
+  @override
+  Rect get bounds => Rect.fromCircle(center: start, radius: radius);
+
+  @override
+  bool hitTest(Offset point, {double tolerance = 10.0}) {
+    final dist = (point - start).distance;
+    if (style.filled && dist <= radius + tolerance) return true;
+    return (dist - radius).abs() <= tolerance + style.strokeWidth / 2;
+  }
 }

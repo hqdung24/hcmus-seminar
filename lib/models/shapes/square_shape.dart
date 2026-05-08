@@ -35,4 +35,22 @@ class SquareShape extends Shape {
   @override
   Shape withEnd(Offset newEnd) =>
       SquareShape(start: start, end: newEnd, style: style);
+
+  /// Normalized (always non-negative w/h) bbox for hit-testing.
+  @override
+  Rect get bounds {
+    final r = _rect();
+    return Rect.fromPoints(
+      Offset(r.left, r.top),
+      Offset(r.left + r.width, r.top + r.height),
+    );
+  }
+
+  @override
+  bool hitTest(Offset point, {double tolerance = 10.0}) {
+    final rect = bounds;
+    if (style.filled && rect.inflate(tolerance).contains(point)) return true;
+    return Shape.distanceToRectBorder(point, rect) <=
+        tolerance + style.strokeWidth / 2;
+  }
 }
